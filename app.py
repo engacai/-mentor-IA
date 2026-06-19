@@ -1,15 +1,8 @@
 import streamlit as st
 from agente_drive import descarregar_manuais_do_drive, inicializar_base_conhecimento, criar_agente_inteligente
 
-# ==========================================
-# 1. CONFIGURAÇÃO DA PÁGINA
-# ==========================================
 st.set_page_config(page_title="Mentor IA - Engenheiros do Açaí", page_icon="🤖", layout="wide")
 
-# ==========================================
-# 2. INICIALIZAÇÃO DO CÉREBRO (Executado apenas 1x)
-# ==========================================
-# O @st.cache_resource garante que o modelo de 4.7GB não seja recarregado a cada nova mensagem
 @st.cache_resource(show_spinner="Iniciando o motor local Llama 3 e processando as regras...")
 def ligar_motor_ia():
     pdfs_locais = descarregar_manuais_do_drive()
@@ -19,9 +12,6 @@ def ligar_motor_ia():
 
 agente = ligar_motor_ia()
 
-# ==========================================
-# 3. INTERFACE VISUAL (SIDEBAR)
-# ==========================================
 with st.sidebar:
     st.title("⚙️ Setup - Engenheiros do Açaí")
     st.write("Defina as restrições físicas antes de consultar o mentor.")
@@ -42,9 +32,6 @@ with st.sidebar:
     st.markdown("---")
     st.caption("🟢 Sistema de Inferência: 100% Offline (Local)")
 
-# ==========================================
-# 4. INTERFACE VISUAL (CHAT PRINCIPAL)
-# ==========================================
 st.title("🤖 Mentor Técnico Especializado")
 st.markdown(f"*Contexto de regras carregado: **{competicao_selecionada}***")
 
