@@ -8,7 +8,6 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 
-# 1. Carrega as variáveis de ambiente (sua API Key)
 load_dotenv()
 
 def configurar_base_conhecimento(caminho_pdf):
@@ -17,20 +16,18 @@ def configurar_base_conhecimento(caminho_pdf):
     loader = PyPDFLoader(caminho_pdf)
     documentos = loader.load()
 
-    # Divide o texto em pedaços menores para não estourar o limite de tokens
+
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
     splits = text_splitter.split_documents(documentos)
 
-    # Cria os embeddings (transforma texto em números) e salva no ChromaDB local
     embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
     vectorstore = Chroma.from_documents(documents=splits, embedding=embeddings)
     
-    return vectorstore.as_retriever(search_kwargs={"k": 3}) # Retorna os 3 trechos mais relevantes
+    return vectorstore.as_retriever(search_kwargs={"k": 3})
 
 def criar_agente(retriever):
     """Cria a corrente (chain) que une a busca no manual com o LLM."""
     
-    # Este é o "Cérebro" restritivo do seu agente. Aqui evitamos alucinações.
     template_prompt = """
     Você é um engenheiro de robótica atuando como mentor técnico.
     Use APENAS os trechos de contexto abaixo (extraídos das regras oficiais) para responder à pergunta.
@@ -52,13 +49,11 @@ def criar_agente(retriever):
     
     prompt = PromptTemplate.from_template(template_prompt)
     
-    # Define o LLM (Gemini 1.5 Flash é rápido e excelente para RAG)
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.2) # Temperatura baixa = menos alucinação
+    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.2)
     
     def formatar_docs(docs):
         return "\n\n".join(doc.page_content for doc in docs)
 
-    # Monta o fluxo de execução (Chain)
     rag_chain = (
         {"context": retriever | formatar_docs, 
          "competicao": RunnablePassthrough(), 
@@ -71,23 +66,16 @@ def criar_agente(retriever):
     
     return rag_chain
 
-# ==========================================
-# EXECUÇÃO DO TESTE
-# ==========================================
 if __name__ == "__main__":
-    # Certifique-se de ter um arquivo 'regras_obr.pdf' na mesma pasta
     caminho_arquivo = "regras_obr.pdf" 
     
     if not os.path.exists(caminho_arquivo):
         print(f"⚠️ Erro: Coloque um arquivo PDF chamado '{caminho_arquivo}' na pasta do projeto.")
     else:
-        # 1. Configura o banco vetorial com o manual
         retriever_regras = configurar_base_conhecimento(caminho_arquivo)
         
-        # 2. Inicializa o agente
         agente = criar_agente(retriever_regras)
         
-        # 3. Simula as entradas do usuário (Isso virá da sua futura interface Web)
         print("\n🤖 Agente Pronto! Processando requisição da equipe...\n")
         
         resposta = agente.invoke({
