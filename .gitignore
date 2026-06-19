@@ -1,0 +1,11 @@
+    # Ambientes Virtuais
+venv/
+env/
+__pycache__/
+
+# Arquivos de Credenciais e Segurança (NUNCA SUBIR)
+credenciais_drive.json
+.env
+
+# Pastas Temporárias de PDFs
+manuais_temporarios/
