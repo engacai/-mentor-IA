@@ -18,7 +18,7 @@ from langchain_core.output_parsers import StrOutputParser
 load_dotenv()
 
 # ID DA TUA PASTA DO GOOGLE DRIVE
-ID_PASTA_DRIVE = "1O3UEDbcTeEsZamCnzJ0ZakrtBFzRAUP1"
+ID_PASTA_DRIVE = "1O3UEDbcTeEsZamCnzJ0ZakrtBFzRAUP"
 
 def descarregar_manuais_do_drive():
     """Liga-se ao Drive usando a Conta de Serviço e descarrega os PDFs da pasta."""
@@ -103,10 +103,6 @@ def criar_agente_inteligente(retriever):
     """
     
     prompt = PromptTemplate.from_template(template_prompt)
-    
-    # ... (o resto da função continua igual) ...
-    
-    # Alterado: Agora instanciamos o Ollama local apontando para o teu llama3 instalado
     llm = ChatOllama(model="llama3", temperature=0.2)
     
     def formatar_docs(docs):
@@ -126,9 +122,6 @@ def criar_agente_inteligente(retriever):
     
     return rag_chain
 
-# ==========================================
-# EXECUÇÃO DO FLUXO
-# ==========================================
 if __name__ == "__main__":
     if ID_PASTA_DRIVE == "COLE_AQUI_O_ID_DA_SUA_PASTA":
         print("⚠️ Configuração necessária: Substitua o ID_PASTA_DRIVE pelo ID real da sua pasta do Drive.")
